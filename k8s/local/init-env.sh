@@ -15,12 +15,17 @@ if [ -f "$TARGET" ]; then
   exit 0
 fi
 
-# Copy export lines, ẩn giá trị sau dấu =
-grep -v '^#' "$SOURCE" | grep -E '^[Ee][Xx][Pp][Oo][Rr][Tt] ' \
-  | sed -E 's/=.*/=/' > "$TARGET"
+awk '
+  /^#/ { print; next }
+  /^[Ee][Xx][Pp][Oo][Rr][Tt] / {
+    sub(/=.*/, "=")
+    print
+    next
+  }
+' "$SOURCE" > "$TARGET"
 
 if [ -s "$TARGET" ]; then
-  echo "✅ Created $TARGET (with masked values)"
+  echo "Created $TARGET (with masked values and comments preserved)"
 else
   echo "Empty .env file created — check if .env.example has valid export lines"
   rm -f "$TARGET"
