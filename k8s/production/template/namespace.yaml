@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+---
