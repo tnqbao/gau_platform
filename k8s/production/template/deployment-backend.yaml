@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-account-service
+  namespace: gau-{ENV}-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-account-service
+  template:
+    metadata:
+      labels:
+        app: gau-account-service
+    spec:
+      containers:
+        - name: gau-account-service
+          image: tnqbao/gau-account-service:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: gau-backend-config
+#          command: [ "/app/entrypoint.sh", "api" ]
+#          resources:
+#            requests:
+#              memory: "512Mi"
+#              cpu: "0.5"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-mailing-service
+  namespace: gau-{ENV}-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-mailing-service
+  template:
+    metadata:
+      labels:
+        app: gau-mailing-service
+    spec:
+      containers:
+        - name: gau-mailing-service
+          image: tnqbao/gau-mailing-service:latest
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef:
+                name: gau-backend-config
+#          command: [ "/app/entrypoint.sh", "api" ]
+#          resources:
+#            requests:
+#              memory: "512Mi"
+#              cpu: "0.5"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-phim-backend
+  namespace: gau-{ENV}-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-phim-backend
+  template:
+    metadata:
+      labels:
+        app: gau-phim-backend
+    spec:
+      containers:
+        - name: gau-phim-backend
+          image: tnqbao/gau-phim-backend:latest
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: gau-backend-config
+#          command: [ "/app/entrypoint.sh", "api" ]
+#          resources:
+#            requests:
+#              memory: "512Mi"
+#              cpu: "0.5"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-truyen-backend
+  namespace: gau-{ENV}-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-truyen-backend
+  template:
+    metadata:
+      labels:
+        app: gau-truyen-backend
+    spec:
+      containers:
+        - name: gau-truyen-backend
+          image: tnqbao/gau-truyen-backend:latest
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: gau-backend-config
+#          command: [ "/app/entrypoint.sh", "api" ]
+#          resources:
+#            requests:
+#              memory: "512Mi"
+#              cpu: "0.5"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "2"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-ai-assistant-service
+  namespace: gau-{ENV}-env
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-ai-assistant-service
+  template:
+    metadata:
+      labels:
+        app: gau-ai-assistant-service
+    spec:
+      containers:
+        - name: gau-ai-assistant-service
+          image: tnqbao/gau-ai-assistant-service:latest
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: gau-backend-config
+#          command: [ "/app/entrypoint.sh", "api" ]
+#          resources:
+#            requests:
+#              memory: "512Mi"
+#              cpu: "0.5"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "2"

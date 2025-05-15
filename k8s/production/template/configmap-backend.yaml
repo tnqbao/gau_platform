@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gau-plaform-config
-  namespace: gau-${ENV}-env
+  name: gau-backend-config
+  namespace: gau-{ENV}-env
   labels:
     app: gau-platform
-    env: ${ENV}
+    env: production
   data:
     EMAIL_SENDER_HOST: ${EMAIL_SENDER_HOST}
     EMAIL_SENDER_PORT: ${EMAIL_SENDER_PORT}
@@ -24,6 +24,12 @@ metadata:
     JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     GLOBAL_DOMAIN: ${GLOBAL_DOMAIN}
     ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-
+    RABBITMQ_HOST: ${RABBITMQ_HOST}
+    RABBITMQ_PORT: ${RABBITMQ_PORT}
+    RABBITMQ_USER: ${RABBITMQ_USER}
+    RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+    MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    MEILI_HOST: ${MEILI_HOST}
+    MEILI_PORT: ${MEILI_PORT}
 
 
