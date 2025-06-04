@@ -1,8 +1,8 @@
 #!/bin/bash
 
-IMAGE_NAME="iamqbao/gau_user_service:latest"
-CONTAINER_NAME="gau-user-service"
-CONTAINER_BACKUP_NAME="gau-user-service-backup"
+IMAGE_NAME="iamqbao/gau_account_service:latest"
+CONTAINER_NAME="gau-account-service"
+CONTAINER_BACKUP_NAME="gau-account-service-backup"
 
 # Pull image mới
 docker pull $IMAGE_NAME

@@ -6,12 +6,35 @@ services:
     container_name: postgres
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
     ports:
       - "5432:5432"
+
+  pgpool:
+    image: bitnami/pgpool:latest
+    container_name: pgpool
+    environment:
+      - PGPOOL_BACKEND_NODES=0:postgres:5432
+      - PGPOOL_POSTGRES_USERNAME=${POSTGRES_USER}
+      - PGPOOL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPOOL_SR_CHECK_USER=${POSTGRES_USER}
+      - PGPOOL_SR_CHECK_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPOOL_ENABLE_LOAD_BALANCING=true
+      - PGPOOL_ENABLE_LOG_CONNECTIONS=true
+      - PGPOOL_ENABLE_LOG_HOSTNAME=true
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+    depends_on:
+      - postgres
 
   redis:
     image: redis:latest
