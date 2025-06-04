@@ -4,6 +4,8 @@ services:
   gau-account-service:
     image: iamqbao/gau_account_service:latest
     container_name: gau-account-service
+    environment:
+      - PGPOOL_URL=${PGPOOL_URL}
     restart: always
     volumes:
       - .env:/gau_account/.env
@@ -13,6 +15,8 @@ services:
   gau-account-service-backup:
     image: iamqbao/gau_account_service:latest
     container_name: gau-account-service-backup
+    environment:
+      - PGPOOL_URL=${PGPOOL_URL}
     restart: always
     volumes:
       - .env:/gau_account/.env

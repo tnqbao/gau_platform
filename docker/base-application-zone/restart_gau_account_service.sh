@@ -4,6 +4,8 @@ IMAGE_NAME="iamqbao/gau_account_service:latest"
 CONTAINER_NAME="gau-account-service"
 CONTAINER_BACKUP_NAME="gau-account-service-backup"
 
+# Lấy biến môi trường từ file .env
+source .env
 # Pull image mới
 docker pull $IMAGE_NAME
 
