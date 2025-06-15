@@ -3,6 +3,8 @@ git pull origin master
 
 ./init.sh
 
+cd ../
+
 cd database-zone || exit 1
 docker-compose down
 docker-compose up -d
