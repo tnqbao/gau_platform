@@ -3,7 +3,7 @@ name: pull
 on:
   push:
     branches:
-      - origin/docker
+      - docker
 
 jobs:
   pull-last-config-and-restart:
