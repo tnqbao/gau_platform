@@ -1,21 +1,25 @@
 version: '3.8'
 
 services:
-  gau-user-service:
-    image: iamqbao/gau_user_service:latest
-    container_name: gau-user-service
+  gau-account-service:
+    image: iamqbao/gau_account_service:latest
+    container_name: gau-account-service
+    environment:
+      - PGPOOL_URL=${PGPOOL_URL}
     restart: always
     volumes:
-      - .env:/gau_user/.env
+      - .env:/gau_account/.env
     networks:
       - app-network
 
-  gau-user-service-backup:
-    image: iamqbao/gau_user_service:latest
-    container_name: gau-user-service-backup
+  gau-account-service-backup:
+    image: iamqbao/gau_account_service:latest
+    container_name: gau-account-service-backup
+    environment:
+      - PGPOOL_URL=${PGPOOL_URL}
     restart: always
     volumes:
-      - .env:/gau_user/.env
+      - .env:/gau_account/.env
     networks:
       - app-network
 
