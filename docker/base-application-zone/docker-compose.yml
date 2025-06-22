@@ -23,23 +23,32 @@ services:
     networks:
       - app-network
 
-  gau-validation-service:
-    image: iamqbao/gau_validation_service:latest
-    container_name: gau-validation-service
+  #  gau-validation-service:
+  #    image: iamqbao/gau_validation_service:latest
+  #    container_name: gau-validation-service
+  #    restart: always
+  #    volumes:
+  #      - .env:/gau_validation/.env
+  #    networks:
+  #      - app-network
+  #
+  #  gau-validation-service-backup:
+  #    image: iamqbao/gau_validation_service:latest
+  #    container_name: gau-validation-service-backup
+  #    restart: always
+  #    volumes:
+  #      - .env:/gau_validation/.env
+  #    networks:
+  #      - app-network
+  gau-cdn-service:
+    image: iamqbao/gau_cdn_service:latest
+    container_name: gau-cdn-service
     restart: always
     volumes:
-      - .env:/gau_validation/.env
+      - cdn.env:/gau_cdn/cdn.env
     networks:
       - app-network
 
-  gau-validation-service-backup:
-    image: iamqbao/gau_validation_service:latest
-    container_name: gau-validation-service-backup
-    restart: always
-    volumes:
-      - .env:/gau_validation/.env
-    networks:
-      - app-network
 
 networks:
   app-network:
