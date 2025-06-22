@@ -45,7 +45,7 @@ services:
     container_name: gau-cdn-service
     restart: always
     volumes:
-      - cdn.env:/gau_cdn/cdn.env
+      - ./cdn.env:/gau_cdn/cdn.env
     networks:
       - app-network
 
