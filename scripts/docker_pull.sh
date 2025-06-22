@@ -1,1 +1,1 @@
-git pull origin docker
+git pull origin deploy/docker
