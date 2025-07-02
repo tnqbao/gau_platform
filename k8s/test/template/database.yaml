@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gau-database-config
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+data:
+  POSTGRES_USER: ${POSTGRES_USERNAME}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_DB: ${POSTGRES_DB}
+  PGPOOL_ADMIN_USERNAME: ${PGPOOL_ADMIN_USERNAME}
+  PGPOOL_ADMIN_PASSWORD: ${PGPOOL_ADMIN_PASSWORD}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-postgres-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-postgres-service
+  template:
+    metadata:
+      labels:
+        app: gau-postgres-service
+    spec:
+      containers:
+        - name: gau-postgres-service
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: gau-database-config
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: gau-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gau-postgres-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app: gau-postgres-service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gau-postgres-pvc
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-pgpool
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-pgpool
+  template:
+    metadata:
+      labels:
+        app: gau-pgpool
+    spec:
+      containers:
+        - name: pgpool
+          image: bitnami/pgpool:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGPOOL_BACKEND_NODES
+              value: "0:gau-postgres-service:5432"
+            - name: PGPOOL_POSTGRES_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-database-config
+                  key: POSTGRES_USER
+            - name: PGPOOL_POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-database-config
+                  key: POSTGRES_PASSWORD
+            - name: PGPOOL_ADMIN_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-database-config
+                  key: PGPOOL_ADMIN_USERNAME
+            - name: PGPOOL_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-database-config
+                  key: PGPOOL_ADMIN_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gau-pgpool
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5433
+      targetPort: 5432
+      protocol: TCP
+      name: pgpool
+  selector:
+    app: gau-pgpool
+---

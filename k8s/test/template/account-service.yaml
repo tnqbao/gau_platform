@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gau-${service-name}-config
+  name: gau-account-config
   namespace: gau-${ENV}-env
   labels:
     app: gau-platform
     env: ${ENV}
   data:
     PGPOOL_HOST: ${PGPOOL_HOST}
-    PGPOOL_DB: ${PGPOOL_DB}
-    PGPOOL_USER: ${PGPOOL_USER}
-    PGPOOL_PASSWORD: ${PGPOOL_PASSWORD}
+    PGPOOL_DB: "gau_account_db"
+    PGPOOL_USER: "accountservice"
+    PGPOOL_PASSWORD: ${POSTGRES_PASSWORD}
     PGPOOL_PORT: ${PGPOOL_PORT}
     PGPOOL_URL: "postgres://${PGPOOL_USER}:${PGPOOL_PASSWORD}@${PGPOOL_HOST}:${PGPOOL_PORT}/${PGPOOL_DB}?sslmode=disable"
     REDIS_ADDRESS: ${REDIS_ADDRESS}
@@ -52,7 +52,7 @@ spec:
             - containerPort: 8080
           envFrom:
             - configMapRef:
-                name: gau-${service-name}-name
+                name: gau-account-config
 #          command: [ "/app/entrypoint.sh", "api" ]
 #          resources:
 #            requests:

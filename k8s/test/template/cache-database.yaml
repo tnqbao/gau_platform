@@ -1,0 +1,187 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gau-file-cache-redis-config
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+data:
+  REDIS_PASSWORD: ${FILE_CACHE_REDIS_PASSWORD}
+  REDIS_DB: ${FILE_CACHE_REDIS_DB}
+  REDIS_PORT: "6379"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-file-cache-redis-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-file-cache-redis-service
+  template:
+    metadata:
+      labels:
+        app: gau-file-cache-redis-service
+    spec:
+      containers:
+        - name: gau-file-cache-redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command: ["redis-server"]
+          args: ["--requirepass", "$(REDIS_PASSWORD)", "--appendonly", "yes"]
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-file-cache-redis-config
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-file-cache-data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      volumes:
+        - name: redis-file-cache-data
+          persistentVolumeClaim:
+            claimName: gau-file-cache-redis-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gau-file-cache-redis-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+  selector:
+    app: gau-file-cache-redis-service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gau-file-cache-redis-pvc
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gau-redis-config
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+data:
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_DB: ${REDIS_DB}
+  REDIS_PORT: "6379"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gau-redis-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gau-redis-service
+  template:
+    metadata:
+      labels:
+        app: gau-redis-service
+    spec:
+      containers:
+        - name: gau-redis-service
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command: ["redis-server"]
+          args: ["--requirepass", "$(REDIS_PASSWORD)", "--appendonly", "yes"]
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: gau-redis-config
+                  key: REDIS_PASSWORD
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: gau-redis-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gau-redis-service
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+  selector:
+    app: gau-redis-service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gau-redis-pvc
+  namespace: gau-${ENV}-env
+  labels:
+    app: gau-platform
+    env: ${ENV}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+---
